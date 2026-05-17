@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone Supply Chain — Who Makes the Money?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,0,0,0.18);
+    --text-primary: #1A1A1A;
+    --text-secondary: #666;
+    --text-tertiary: #999;
+    --accent: #1A1A1A;
+    --apple-blue: #0A84FF;
+    --teal: #0F6E56;
+    --teal-light: #E1F5EE;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red-light: #FCEBEB;
+    --red: #A32D2D;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,245,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 52px;
+  }
+  .nav-title { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+  .lang-switcher { display: flex; gap: 4px; }
+  .lang-btn {
+    padding: 4px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border); border-radius: 20px;
+    background: transparent; color: var(--text-secondary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .lang-btn.active { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 0 3.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 1.25rem;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+  .hero-title strong { font-weight: 500; }
+  .hero-sub {
+    font-size: 16px; color: var(--text-secondary);
+    max-width: 560px; line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--border);
+  }
+  .metric {
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
+  }
+  .metric-label { font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .metric-val { font-size: 2rem; font-weight: 300; font-family: 'DM Mono', monospace; color: var(--text-primary); }
+  .metric-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+
+  /* SECTIONS */
+  section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+  .section-title { font-size: 1.5rem; font-weight: 400; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+  .section-desc { font-size: 14px; color: var(--text-secondary); max-width: 600px; line-height: 1.75; margin-bottom: 2rem; }
+
+  /* BARS */
+  .bar-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 6px; cursor: pointer;
+    padding: 6px 0;
+  }
+  .bar-row:hover .bar-label { color: var(--text-primary); }
+  .bar-label { font-size: 13px; color: var(--text-secondary); width: 160px; flex-shrink: 0; transition: color 0.15s; }
+  .bar-track {
+    flex: 1; height: 32px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 4px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 4px;
+    display: flex; align-items: center; padding-left: 10px;
+  }
+  .bar-val { font-size: 12px; font-weight: 500; font-family: 'DM Mono', monospace; }
+  .bar-detail {
+    margin-left: 174px; margin-bottom: 8px;
+    font-size: 13px; color: var(--text-secondary);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px;
+    display: none; line-height: 1.75;
+    animation: fadeIn 0.2s ease;
+  }
+  .bar-detail.open { display: block; }
+
+  /* SMILE */
+  .chart-wrap { position: relative; width: 100%; height: 220px; margin: 0.5rem 0; }
+
+  /* SUPPLIERS */
+  .supplier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px; margin-top: 0.5rem;
+  }
+  .supplier-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.25rem;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .supplier-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+  .supplier-card.active { border-color: var(--text-primary); border-width: 1.5px; }
+  .supplier-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .supplier-role { font-size: 12px; color: var(--text-tertiary); margin-bottom: 10px; }
+  .country-tag {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 20px; margin-bottom: 10px; font-weight: 400;
+  }
+  .tag-tw { background: #E6F1FB; color: #0C447C; }
+  .tag-kr { background: var(--teal-light); color: var(--teal); }
+  .tag-cn { background: var(--amber-light); color: var(--amber); }
+  .supplier-margin { font-size: 12px; color: var(--text-tertiary); }
+  .supplier-margin strong { color: var(--text-primary); font-weight: 500; }
+  .supplier-detail {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.75; display: none;
+    animation: fadeIn 0.2s ease;
+  }
+  .supplier-detail.open { display: block; }
+  .supplier-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--text-secondary);
+    margin-top: 10px; text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .supplier-link:hover { color: var(--text-primary); border-color: var(--text-primary); }
+  .supplier-link svg { width: 11px; height: 11px; }
+
+  /* BUYER POWER */
+  .bp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 0.5rem; }
+  .bp-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.25rem;
+  }
+  .bp-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+  .bp-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 14px; }
+  .risk-row { margin-bottom: 10px; }
+  .risk-label { font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .risk-track { height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; overflow: hidden; }
+  .risk-fill { height: 100%; border-radius: 3px; }
+
+  /* FOOTER */
+  .footer {
+    padding: 3rem 0; text-align: center;
+    font-size: 12px; color: var(--text-tertiary);
+    line-height: 1.8;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    .container { padding: 0 1.25rem; }
+    .hero { padding: 3rem 0 2.5rem; }
+    .bar-label { width: 110px; font-size: 12px; }
+    .bar-detail { margin-left: 0; }
+    .bp-grid { grid-template-columns: 1fr; }
+    .metric-val { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title" data-en="iPhone Supply Chain" data-zh="iPhone 供应链">iPhone Supply Chain</span>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-eyebrow" data-en="Economics Research Project" data-zh="经济学研究项目">Economics Research Project</p>
+    <h1 class="hero-title">
+      <span data-en="You paid <strong>$999</strong> for an iPhone.<br>Who actually made the money?" data-zh="你花了 <strong>$999</strong> 买一部 iPhone。<br>钱，到底去了哪里？">You paid <strong>$999</strong> for an iPhone.<br>Who actually made the money?</span>
+    </h1>
+    <p class="hero-sub" data-en="An interactive breakdown of Apple's global supply chain — tracing how revenue is distributed across countries, companies, and stages of production." data-zh="这是一个关于苹果全球供应链的交互式分析工具，追踪每一美元如何在不同国家、不同公司、不同生产环节之间流动与分配。">An interactive breakdown of Apple's global supply chain — tracing how revenue is distributed across countries, companies, and stages of production.</p>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-label" data-en="Apple's share" data-zh="苹果所得">Apple's share</div>
+        <div class="metric-val mono">~$450</div>
+        <div class="metric-sub" data-en="45% of retail price" data-zh="零售价的 45%">45% of retail price</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-en="All suppliers" data-zh="全部供应商合计">All suppliers</div>
+        <div class="metric-val mono">~$300</div>
+        <div class="metric-sub" data-en="30% of retail price" data-zh="零售价的 30%">30% of retail price</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-en="Assembly (China)" data-zh="组装（中国）">Assembly (China)</div>
+        <div class="metric-val mono">~$30</div>
+        <div class="metric-sub" data-en="3% of retail price" data-zh="零售价的 3%">3% of retail price</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-en="Apple gross margin" data-zh="苹果毛利率">Apple gross margin</div>
+        <div class="metric-val mono">43%</div>
+        <div class="metric-sub" data-en="vs suppliers' 6–10%" data-zh="供应商仅 6–10%">vs suppliers' 6–10%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARS -->
+  <section>
+    <p class="section-label" data-en="Section 01" data-zh="第一部分">Section 01</p>
+    <h2 class="section-title" data-en="Where does $999 go?" data-zh="$999 流向何处？">Where does $999 go?</h2>
+    <p class="section-desc" data-en="Click any row to learn more about each stakeholder." data-zh="点击任意行，查看各参与方的详细说明。">Click any row to learn more about each stakeholder.</p>
+
+    <div class="bar-row" onclick="toggleDetail('d-apple')">
+      <div class="bar-label" data-en="Apple (brand + design)" data-zh="苹果（品牌 + 设计）">Apple (brand + design)</div>
+      <div class="bar-track"><div class="bar-fill" style="width:45%;background:#1A1A1A;"><span class="bar-val" style="color:#F7F5F0;">$450</span></div></div>
+    </div>
+    <div class="bar-detail" id="d-apple"
+      data-en="Apple captures value through intellectual property — the A18 chip design, iOS, and brand prestige. None of this involves physical manufacturing. Apple's gross margin on iPhone is ~43%, far exceeding any supplier in its chain."
+      data-zh="苹果通过知识产权获取价值——A18 芯片设计、iOS 系统与品牌溢价，这些都不涉及实体制造。苹果 iPhone 的毛利率约为 43%，远超供应链中任何一家供应商。">
+      Apple captures value through intellectual property — the A18 chip design, iOS, and brand prestige. None of this involves physical manufacturing. Apple's gross margin on iPhone is ~43%, far exceeding any supplier in its chain.
+    </div>
+
+    <div class="bar-row" onclick="toggleDetail('d-parts')">
+      <div class="bar-label" data-en="Components (global)" data-zh="零部件（全球）">Components (global)</div>
+      <div class="bar-track"><div class="bar-fill" style="width:30%;background:#0F6E56;"><span class="bar-val" style="color:#E1F5EE;">$300</span></div></div>
+    </div>
+    <div class="bar-detail" id="d-parts"
+      data-en="Chips, screens, cameras, batteries, and structural parts sourced from Taiwan, South Korea, and China. Despite being the most technically complex part of production, suppliers earn thin margins due to intense competition and Apple's negotiating power."
+      data-zh="芯片、屏幕、摄像头、电池及结构件，分别来自台湾、韩国和中国大陆。尽管这些零部件技术含量极高，但由于竞争激烈、苹果议价能力强，供应商利润极为有限。">
+      Chips, screens, cameras, batteries, and structural parts sourced from Taiwan, South Korea, and China. Despite being the most technically complex part of production, suppliers earn thin margins due to intense competition and Apple's negotiating power.
+    </div>
+
+    <div class="bar-row" onclick="toggleDetail('d-assemble')">
+      <div class="bar-label" data-en="Assembly (Foxconn)" data-zh="组装（富士康）">Assembly (Foxconn)</div>
+      <div class="bar-track"><div class="bar-fill" style="width:3%;background:#888;min-width:60px;"><span class="bar-val" style="color:#F7F5F0;">$30</span></div></div>
+    </div>
+    <div class="bar-detail" id="d-assemble"
+      data-en="Foxconn assembles iPhones in Zhengzhou and Shenzhen. Despite employing hundreds of thousands of workers, assembly captures only ~3% of the retail price — the clearest example of the smile curve in action."
+      data-zh="富士康在郑州和深圳组装 iPhone，高峰期雇用工人多达 30 万人。尽管规模庞大，组装环节只获得约 3% 的零售价——这是微笑曲线理论最直观的体现。">
+      Foxconn assembles iPhones in Zhengzhou and Shenzhen. Despite employing hundreds of thousands of workers, assembly captures only ~3% of the retail price — the clearest example of the smile curve in action.
+    </div>
+
+    <div class="bar-row" onclick="toggleDetail('d-other')">
+      <div class="bar-label" data-en="Retail + logistics + tax" data-zh="零售 + 物流 + 税费">Retail + logistics + tax</div>
+      <div class="bar-track"><div class="bar-fill" style="width:22%;background:#B4B2A9;"><span class="bar-val" style="color:#2C2C2A;">$219</span></div></div>
+    </div>
+    <div class="bar-detail" id="d-other"
+      data-en="Distribution, retail margins, import duties, and logistics costs. This share varies significantly by country and sales channel."
+      data-zh="包括渠道分销、零售利润、进口关税和物流成本。这一部分因国家和销售渠道不同而差异显著。">
+      Distribution, retail margins, import duties, and logistics costs. This share varies significantly by country and sales channel.
+    </div>
+  </section>
+
+  <!-- SMILE CURVE -->
+  <section>
+    <p class="section-label" data-en="Section 02" data-zh="第二部分">Section 02</p>
+    <h2 class="section-title" data-en="The smile curve" data-zh="微笑曲线">The smile curve</h2>
+    <p class="section-desc" data-en="Value-added in a supply chain forms a U-shape — highest at R&D and branding, lowest at manufacturing. Apple owns both ends. Suppliers are stuck in the middle." data-zh="供应链中的附加值呈 U 型分布——研发与品牌两端最高，制造环节最低。苹果占据两端，供应商困于谷底。">Value-added in a supply chain forms a U-shape — highest at R&D and branding, lowest at manufacturing. Apple owns both ends. Suppliers are stuck in the middle.</p>
+    <div class="chart-wrap">
+      <canvas id="smileChart" role="img" aria-label="Smile curve showing high value at R&D and Marketing, low at Assembly">Value is high at R&D and Marketing stages, lowest at Assembly.</canvas>
+    </div>
+  </section>
+
+  <!-- SUPPLIERS -->
+  <section>
+    <p class="section-label" data-en="Section 03" data-zh="第三部分">Section 03</p>
+    <h2 class="section-title" data-en="Meet the suppliers" data-zh="认识供应商">Meet the suppliers</h2>
+    <p class="section-desc" data-en="Six companies across four countries. Click any card to learn more." data-zh="来自四个国家的六家公司。点击任意卡片查看详情。">Six companies across four countries. Click any card to learn more.</p>
+    <div class="supplier-grid">
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'tsmc')">
+        <div class="supplier-name">TSMC</div>
+        <div class="supplier-role" data-en="A18 chip fabrication" data-zh="A18 芯片代工">A18 chip fabrication</div>
+        <span class="country-tag tag-tw" data-en="Taiwan" data-zh="台湾">Taiwan</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~25%</strong>" data-zh="净利润率：<strong>~25%</strong>">Net margin: <strong>~25%</strong></div>
+        <div class="supplier-detail" id="tsmc"
+          data-en='TSMC manufactures Apple\'s A18 chip using 3nm process nodes. As the only company capable of producing cutting-edge chips at scale, TSMC has rare pricing power among Apple\'s suppliers — reflected in its unusually high margin. Still, the chip design belongs to Apple.<br><a class="supplier-link" href="https://www.tsmc.com" target="_blank">↗ tsmc.com</a>'
+          data-zh='台积电采用 3 纳米制程为苹果生产 A18 芯片。作为全球唯一能大规模量产顶级芯片的公司，台积电在苹果供应商中拥有罕见的定价能力，利润率远高于同行。但芯片的设计知识产权仍属于苹果。<br><a class="supplier-link" href="https://www.tsmc.com" target="_blank">↗ tsmc.com</a>'>
+          TSMC manufactures Apple's A18 chip using 3nm process nodes. As the only company capable of producing cutting-edge chips at scale, TSMC has rare pricing power — reflected in its unusually high margin. Still, the chip design belongs to Apple.<br><a class="supplier-link" href="https://www.tsmc.com" target="_blank">↗ tsmc.com</a>
+        </div>
+      </div>
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'samsung')">
+        <div class="supplier-name">Samsung / LG</div>
+        <div class="supplier-role" data-en="OLED display panels" data-zh="OLED 显示屏">OLED display panels</div>
+        <span class="country-tag tag-kr" data-en="South Korea" data-zh="韩国">South Korea</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~8–12%</strong>" data-zh="净利润率：<strong>~8–12%</strong>">Net margin: <strong>~8–12%</strong></div>
+        <div class="supplier-detail" id="samsung"
+          data-en='Korean firms supply OLED screens. Display technology is one of the higher-value components, and Korean suppliers have maintained leverage through years of R&D investment. Apple is gradually diversifying screen suppliers to reduce this dependency.<br><a class="supplier-link" href="https://www.samsung.com" target="_blank">↗ samsung.com</a>'
+          data-zh='韩国企业为 iPhone 供应 OLED 屏幕。显示技术附加值相对较高，韩国供应商凭借多年研发积累保持了议价能力。但苹果正逐步推进供应商多元化，以降低对韩国厂商的依赖。<br><a class="supplier-link" href="https://www.samsung.com" target="_blank">↗ samsung.com</a>'>
+          Korean firms supply OLED screens. Display technology is one of the higher-value components, and Korean suppliers have maintained leverage through years of R&D investment. Apple is gradually diversifying screen suppliers to reduce this dependency.<br><a class="supplier-link" href="https://www.samsung.com" target="_blank">↗ samsung.com</a>
+        </div>
+      </div>
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'largan')">
+        <div class="supplier-name">Largan Precision</div>
+        <div class="supplier-role" data-en="Camera lens modules" data-zh="摄像头镜头模组">Camera lens modules</div>
+        <span class="country-tag tag-tw" data-en="Taiwan" data-zh="台湾">Taiwan</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~15%</strong>" data-zh="净利润率：<strong>~15%</strong>">Net margin: <strong>~15%</strong></div>
+        <div class="supplier-detail" id="largan"
+          data-en='Largan supplies precision optical lenses for iPhone cameras. Despite strong technical expertise, a large share of Largan\'s revenue comes from Apple — making it vulnerable to annual price negotiations and the threat of supplier substitution.<br><a class="supplier-link" href="https://www.largan.com.tw" target="_blank">↗ largan.com.tw</a>'
+          data-zh='大立光为 iPhone 摄像头提供精密光学镜头。尽管技术实力雄厚，来自苹果的收入占比仍相当高，因此在每年价格谈判中处于被动，也面临被替代的潜在威胁。<br><a class="supplier-link" href="https://www.largan.com.tw" target="_blank">↗ largan.com.tw</a>'>
+          Largan supplies precision optical lenses for iPhone cameras. Despite strong technical expertise, a large share of Largan's revenue comes from Apple — making it vulnerable to annual price negotiations and the threat of supplier substitution.<br><a class="supplier-link" href="https://www.largan.com.tw" target="_blank">↗ largan.com.tw</a>
+        </div>
+      </div>
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'sunwoda')">
+        <div class="supplier-name">欣旺达 Sunwoda</div>
+        <div class="supplier-role" data-en="Battery modules" data-zh="电池模组">Battery modules</div>
+        <span class="country-tag tag-cn" data-en="Shenzhen, China" data-zh="中国深圳">Shenzhen, China</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~4–7%</strong>" data-zh="净利润率：<strong>~4–7%</strong>">Net margin: <strong>~4–7%</strong></div>
+        <div class="supplier-detail" id="sunwoda"
+          data-en='A Shenzhen-based tier-1 supplier to Apple, Sunwoda supplies lithium battery modules for every iPhone. To counteract Apple\'s buying power, Sunwoda has deliberately diversified its client base — supplying batteries to Huawei, Xiaomi, and others — reducing revenue concentration and strengthening its negotiating position.<br><a class="supplier-link" href="https://www.sunwoda.com" target="_blank">↗ sunwoda.com</a>'
+          data-zh='欣旺达是总部位于深圳的苹果一级供应商，为每一部 iPhone 提供锂电池模组。为对抗苹果的买方议价能力，欣旺达主动实施客户多元化策略，同时为华为、小米等厂商供货，有效降低了收入集中度，在谈判中争取到了更强的话语权。<br><a class="supplier-link" href="https://www.sunwoda.com" target="_blank">↗ sunwoda.com</a>'>
+          A Shenzhen-based tier-1 supplier to Apple, Sunwoda supplies lithium battery modules for every iPhone. To counteract Apple's buying power, Sunwoda has deliberately diversified its client base — supplying batteries to Huawei, Xiaomi, and others — reducing revenue concentration and strengthening its negotiating position.<br><a class="supplier-link" href="https://www.sunwoda.com" target="_blank">↗ sunwoda.com</a>
+        </div>
+      </div>
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'byd')">
+        <div class="supplier-name">BYD Electronic</div>
+        <div class="supplier-role" data-en="Metal casings + structural parts" data-zh="金属外壳 + 结构件">Metal casings + structural parts</div>
+        <span class="country-tag tag-cn" data-en="China" data-zh="中国">China</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~3–5%</strong>" data-zh="净利润率：<strong>~3–5%</strong>">Net margin: <strong>~3–5%</strong></div>
+        <div class="supplier-detail" id="byd"
+          data-en='BYD Electronic manufactures aluminum chassis and structural components. As a commoditized manufacturing process, margins are among the thinnest in the supply chain. BYD competes on cost and scale, with little pricing power over Apple.<br><a class="supplier-link" href="https://www.bydelectronic.com" target="_blank">↗ bydelectronic.com</a>'
+          data-zh='比亚迪电子负责生产铝制机身和结构件。由于该制造工序高度同质化，利润率是供应链中最低的之一。比亚迪依靠成本控制和规模效应竞争，对苹果几乎没有定价能力。<br><a class="supplier-link" href="https://www.bydelectronic.com" target="_blank">↗ bydelectronic.com</a>'>
+          BYD Electronic manufactures aluminum chassis and structural components. As a commoditized manufacturing process, margins are among the thinnest in the supply chain. BYD competes on cost and scale, with little pricing power over Apple.<br><a class="supplier-link" href="https://www.bydelectronic.com" target="_blank">↗ bydelectronic.com</a>
+        </div>
+      </div>
+
+      <div class="supplier-card" onclick="toggleSupplier(this,'foxconn')">
+        <div class="supplier-name">Foxconn 富士康</div>
+        <div class="supplier-role" data-en="Final assembly" data-zh="整机组装">Final assembly</div>
+        <span class="country-tag tag-cn" data-en="China" data-zh="中国">China</span><br>
+        <div class="supplier-margin" data-en="Net margin: <strong>~2–3%</strong>" data-zh="净利润率：<strong>~2–3%</strong>">Net margin: <strong>~2–3%</strong></div>
+        <div class="supplier-detail" id="foxconn"
+          data-en='Foxconn assembles the finished iPhone at its Zhengzhou facility — employing up to 300,000 workers. Despite its scale, Foxconn earns the thinnest margin of any major supplier. Assembly is the most substitutable step in the chain, giving Apple maximum leverage.<br><a class="supplier-link" href="https://www.foxconn.com" target="_blank">↗ foxconn.com</a>'
+          data-zh='富士康在郑州工厂完成 iPhone 的最终组装，高峰期雇用工人多达 30 万人。尽管规模庞大，富士康的利润率却是所有主要供应商中最低的。组装是最容易被替代的环节，这也赋予了苹果最强的议价筹码。<br><a class="supplier-link" href="https://www.foxconn.com" target="_blank">↗ foxconn.com</a>'>
+          Foxconn assembles the finished iPhone at its Zhengzhou facility — employing up to 300,000 workers. Despite its scale, Foxconn earns the thinnest margin of any major supplier. Assembly is the most substitutable step in the chain, giving Apple maximum leverage.<br><a class="supplier-link" href="https://www.foxconn.com" target="_blank">↗ foxconn.com</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BUYER POWER -->
+  <section>
+    <p class="section-label" data-en="Section 04" data-zh="第四部分">Section 04</p>
+    <h2 class="section-title" data-en="Buyer power and the supplier's dilemma" data-zh="买方议价能力与供应商困局">Buyer power and the supplier's dilemma</h2>
+    <p class="section-desc" data-en="When one buyer controls most of your revenue, they control your pricing. Porter's Five Forces calls this buyer bargaining power — and it explains why Shenzhen's smartest manufacturers have deliberately avoided dependence on any single client." data-zh="当一个买家掌控了你大部分收入，他们就掌控了你的定价权。波特五力模型将这一现象称为"买方议价能力"——这也正是深圳最成熟的制造商主动避免依赖单一客户的根本原因。">When one buyer controls most of your revenue, they control your pricing. Porter's Five Forces calls this buyer bargaining power — and it explains why Shenzhen's smartest manufacturers have deliberately avoided dependence on any single client.</p>
+    <div class="bp-grid">
+      <div class="bp-card">
+        <div class="bp-title" data-en="Single-client dependence" data-zh="单一客户依赖">Single-client dependence</div>
+        <div class="bp-desc" data-en="If Apple represents 70%+ of revenue, a supplier must accept Apple's annual price-down demands. Losing the contract is existential." data-zh="若苹果占供应商收入的 70% 以上，供应商只能接受苹果每年的压价要求。失去这份合同，意味着生死存亡。">If Apple represents 70%+ of revenue, a supplier must accept Apple's annual price-down demands. Losing the contract is existential.</div>
+        <div class="risk-row">
+          <div class="risk-label" data-en="Negotiating leverage" data-zh="议价能力">Negotiating leverage</div>
+          <div class="risk-track"><div class="risk-fill" style="width:20%;background:#E24B4A;"></div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label" data-en="Revenue risk" data-zh="收入风险">Revenue risk</div>
+          <div class="risk-track"><div class="risk-fill" style="width:85%;background:#E24B4A;"></div></div>
+        </div>
+      </div>
+      <div class="bp-card">
+        <div class="bp-title" data-en="Diversified client base" data-zh="多元化客户策略">Diversified client base</div>
+        <div class="bp-desc" data-en="By serving Apple, Huawei, Samsung, and others simultaneously, suppliers can credibly walk away from bad terms — and Apple knows it." data-zh="同时服务苹果、华为、三星等多家厂商，供应商就有底气拒绝不合理的条款——苹果对此心知肚明。">By serving Apple, Huawei, Samsung, and others simultaneously, suppliers can credibly walk away from bad terms — and Apple knows it.</div>
+        <div class="risk-row">
+          <div class="risk-label" data-en="Negotiating leverage" data-zh="议价能力">Negotiating leverage</div>
+          <div class="risk-track"><div class="risk-fill" style="width:65%;background:#0F6E56;"></div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label" data-en="Revenue risk" data-zh="收入风险">Revenue risk</div>
+          <div class="risk-track"><div class="risk-fill" style="width:30%;background:#0F6E56;"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer container">
+  <p data-en="Data sources: Apple SEC filings, World Bank Global Value Chain reports, Harvard Atlas of Economic Complexity. Margin estimates are approximate industry figures." data-zh="数据来源：苹果 SEC 财报、世界银行全球价值链报告、哈佛经济复杂性图谱。利润率数据为行业近似估值。">Data sources: Apple SEC filings, World Bank Global Value Chain reports, Harvard Atlas of Economic Complexity. Margin estimates are approximate industry figures.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+let currentLang = 'en';
+const labelsEn = ['R&D','Design','Components','Assembly','Logistics','Branding','Marketing'];
+const labelsZh = ['研发','设计','零部件','组装','物流','品牌','营销'];
+
+const smileChart = new Chart(document.getElementById('smileChart'), {
+  type: 'line',
+  data: {
+    labels: labelsEn,
+    datasets: [{
+      data: [85,78,42,18,30,80,88],
+      borderColor: '#1A1A1A',
+      backgroundColor: 'transparent',
+      pointBackgroundColor: '#BA7517',
+      pointRadius: 6,
+      pointHoverRadius: 8,
+      tension: 0.45,
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => (currentLang === 'zh' ? '附加值指数：' : 'Value index: ') + ctx.parsed.y }}
+    },
+    scales: {
+      x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#999', font: { size: 12, family: 'DM Sans' }}},
+      y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#999', font: { size: 12 }}}
+    }
+  }
+});
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if (val) el.innerHTML = val;
+  });
+  document.querySelectorAll('.supplier-detail.open').forEach(d => {
+    const val = d.getAttribute('data-' + lang);
+    if (val) d.innerHTML = val;
+  });
+  smileChart.data.labels = lang === 'zh' ? labelsZh : labelsEn;
+  smileChart.update();
+}
+
+function toggleDetail(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleSupplier(card, id) {
+  const detail = document.getElementById(id);
+  const isOpen = detail.classList.contains('open');
+  document.querySelectorAll('.supplier-detail').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.supplier-card').forEach(c => c.classList.remove('active'));
+  if (!isOpen) {
+    detail.classList.add('open');
+    card.classList.add('active');
+    const val = detail.getAttribute('data-' + currentLang);
+    if (val) detail.innerHTML = val;
+  }
+}
+</script>
+</body>
+</html>
